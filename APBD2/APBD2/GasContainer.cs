@@ -18,4 +18,8 @@ public class GasContainer : Container, IHazardNotifier {
     public void NotifyOfDanger() {
         Console.WriteLine($"A dangerous operation has been attempted on container {SerialNumber} ");
     }
+    public override void GetInformation() {
+        base.GetInformation();
+        //TODO
+    }
 }

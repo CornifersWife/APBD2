@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 namespace APBD2;
 
 public class OverfillException : Exception {
-
     public OverfillException() {
     }
 

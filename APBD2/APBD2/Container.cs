@@ -1,12 +1,11 @@
 namespace APBD2;
 
 public abstract class Container {
-
     public float load;
     public float containerMass; //kg
-    public float height; //cm
-    public float depth; //cm
-    public float maxLoad; //kg
+    private float height; //cm
+    private float depth; //cm
+    protected float maxLoad; //kg
 
     public string SerialNumber { get; private set; }
 
@@ -19,8 +18,9 @@ public abstract class Container {
         load = 0;
     }
 
+    //TODO check if it works
     private static Dictionary<string, int> _typeCounts = new Dictionary<string, int>();
-    
+
     private string GenerateSerialNumber() {
         string typeChar = GetTypeChar();
 
