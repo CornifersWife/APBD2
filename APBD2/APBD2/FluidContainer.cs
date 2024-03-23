@@ -5,7 +5,11 @@ namespace APBD2;
 public class FluidContainer :  Container, IHazardNotifier {
 
     public bool containsDangerousLoad;
-    
+
+    public FluidContainer(float containerMass, float height, float depth, float maxLoad, bool containsDangerousLoad) : base(containerMass, height, depth, maxLoad) {
+        this.containsDangerousLoad = containsDangerousLoad;
+    }
+
     protected override string GetTypeChar() => "L";
 
     public void NotifyOfDanger() {

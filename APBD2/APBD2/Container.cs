@@ -1,19 +1,26 @@
 namespace APBD2;
 
 public abstract class Container {
-    public float load { get; set; }
+
+    public float load;
     public float containerMass; //kg
     public float height; //cm
     public float depth; //cm
     public float maxLoad; //kg
+
     public string SerialNumber { get; private set; }
 
-    private static Dictionary<string, int> _typeCounts = new Dictionary<string, int>();
-
-    public Container() {
+    protected Container(float containerMass, float height, float depth, float maxLoad) {
+        this.containerMass = containerMass;
+        this.height = height;
+        this.depth = depth;
+        this.maxLoad = maxLoad;
         SerialNumber = GenerateSerialNumber();
+        load = 0;
     }
 
+    private static Dictionary<string, int> _typeCounts = new Dictionary<string, int>();
+    
     private string GenerateSerialNumber() {
         string typeChar = GetTypeChar();
 
@@ -37,5 +44,13 @@ public abstract class Container {
         if (load + addedLoad > maxLoad)
             throw new OverfillException($"Container {SerialNumber} has been overfilled");
         load += addedLoad;
+    }
+
+    public virtual void GetInformation() {
+        Console.WriteLine($"SerialNumber {SerialNumber}" +
+                          $"Load: {load}/{maxLoad} kg" +
+                          $"Container mass: {containerMass} kg" +
+                          $"Height: {height} cm" +
+                          $"Depth: {depth} cm");
     }
 }
