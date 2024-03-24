@@ -1,12 +1,11 @@
 namespace APBD2;
 
 public abstract class Container {
-    public float load;
-    public float containerMass; //kg
+    public float Load { get; protected set; }
+    private float containerMass; //kg
     private float height; //cm
     private float depth; //cm
     protected float maxLoad; //kg
-
     public string SerialNumber { get; private set; }
 
     protected Container(float containerMass, float height, float depth, float maxLoad) {
@@ -15,19 +14,15 @@ public abstract class Container {
         this.depth = depth;
         this.maxLoad = maxLoad;
         SerialNumber = GenerateSerialNumber();
-        load = 0;
+        Load = 0;
     }
 
-    //TODO check if it works
     private static Dictionary<string, int> _typeCounts = new Dictionary<string, int>();
 
     private string GenerateSerialNumber() {
         string typeChar = GetTypeChar();
 
-        if (!_typeCounts.ContainsKey(typeChar)) {
-            _typeCounts[typeChar] = 1;
-        }
-        else {
+        if (!_typeCounts.TryAdd(typeChar, 1)) {
             _typeCounts[typeChar]++;
         }
 
@@ -37,20 +32,24 @@ public abstract class Container {
     protected abstract string GetTypeChar();
 
     public virtual void RemoveLoad() {
-        load = 0;
+        Load = 0;
     }
 
     public virtual void AddLoad(float addedLoad) {
-        if (load + addedLoad > maxLoad)
+        if (Load + addedLoad > maxLoad)
             throw new OverfillException($"Container {SerialNumber} has been overfilled");
-        load += addedLoad;
+        Load += addedLoad;
     }
 
     public virtual void GetInformation() {
-        Console.WriteLine($"SerialNumber {SerialNumber}" +
-                          $"Load: {load}/{maxLoad} kg" +
-                          $"Container mass: {containerMass} kg" +
-                          $"Height: {height} cm" +
-                          $"Depth: {depth} cm");
+        Console.Write($"SerialNumber {SerialNumber}\n" +
+                      $"Load: {Load}/{maxLoad} kg\n" +
+                      $"Container mass: {containerMass} kg\n" +
+                      $"Height: {height} cm\n" +
+                      $"Depth: {depth} cm\n");
+    }
+
+    public virtual float TotalMass() {
+        return containerMass + Load;
     }
 }

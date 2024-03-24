@@ -5,7 +5,7 @@ public class ContainerShip {
     private float maxSpeed; //in knots
     private int maxContainerAmount;
     private float maxTotalContainersLoad; //in tons
-    private float currentTotalContainerLoad = 0f;
+    private float currentTotalContainerLoad;
 
     public ContainerShip(float maxSpeed, int maxContainerAmount, float maxTotalContainersLoad) {
         this.maxSpeed = maxSpeed;
@@ -22,8 +22,8 @@ public class ContainerShip {
         Containers = containers;
     }
 
-    public void RemoveContainer(Container? container) {
-        //TOOD remove load
+    public void RemoveContainer(Container container) {
+        currentTotalContainerLoad -= container.TotalMass();
         Containers.Remove(container);
     }
 
@@ -34,26 +34,37 @@ public class ContainerShip {
     }
 
     public void AddContainer(Container addedContainer) {
+        if (Containers.Contains(addedContainer)) {
+            Console.WriteLine("Container already on this ship");
+            return;
+        }
+
         if (Containers.Count >= maxContainerAmount) {
             throw new Exception("Max container amount has been exceeded on this ship");
         }
 
-        float totalContainerMass = addedContainer.containerMass + addedContainer.load;
-        if (totalContainerMass + currentTotalContainerLoad > maxTotalContainersLoad) {
+        if (addedContainer.TotalMass() + currentTotalContainerLoad > maxTotalContainersLoad) {
             throw new Exception("Max total container has been exceeded on this ship");
         }
 
+        currentTotalContainerLoad += addedContainer.TotalMass();
         Containers.Add(addedContainer);
     }
 
-    public Container? FindContainer(string containerSerialNumber) {
+    private Container? FindContainer(string containerSerialNumber) {
         Container? container = Containers.Find(container => container.SerialNumber == containerSerialNumber);
         return container;
     }
 
     public void ChangeContainer(Container newContainer, string oldContainerSerialNumber) {
         Container? oldContainer = FindContainer(oldContainerSerialNumber);
-        //TODO finish implementing
+
+        if (oldContainer == null) {
+            throw new Exception($"Container with serial number {oldContainerSerialNumber} not found on the ship.");
+        }
+
+        RemoveContainer(oldContainer);
+        AddContainer(newContainer);
     }
 
     public static void MoveContainerBetweenShips(String containerSerialNumber, ContainerShip from, ContainerShip to) {
@@ -73,15 +84,17 @@ public class ContainerShip {
 
     public void GetInformation() {
         float currentLoad = 0f;
-        foreach (Container? container in Containers) {
-            currentLoad += container.load;
+        var serialNumbers = new List<string>();
+        foreach (Container container in Containers) {
+            currentLoad += container.Load;
+            serialNumbers.Add(container.SerialNumber);
         }
 
         currentLoad /= 1000f;
-
-        Console.WriteLine($"Max speed: {maxSpeed} knots" +
-                          $"Containers: {Containers.Count}/{maxContainerAmount}" +
-                          $"Current load: {currentLoad}/{maxTotalContainersLoad} tons");
+        string serialNumbersString = String.Join(", ", serialNumbers);
+        Console.WriteLine($"Max speed: {maxSpeed} knots\n" +
+                          $"Current load: {currentLoad}/{maxTotalContainersLoad} tons\n" +
+                          $"Containers: {Containers.Count}/{maxContainerAmount}\n" +
+                          $"{serialNumbersString}\n");
     }
-    //TODO check for total weight of containers whenever load is added to any container
 }
